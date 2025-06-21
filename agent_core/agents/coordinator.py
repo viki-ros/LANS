@@ -3,27 +3,16 @@ Coordinator - Orchestrates communication between planning and coding agents.
 """
 
 import asyncio
-import json
-import uuid
-from typing import Dict, Any, List, Optional
 from datetime import datetime
-import logging
-from dataclasses import dataclass, field
-from typing import Dict, Any, List, Optional
-from datetime import datetime
+from typing import Any, Dict, List, Optional
 
-# Simple data models for coordinator (inline to avoid missing imports)
-@dataclass
-class ProjectState:
-    """Simple project state for coordinator."""
-    tasks: List[Any] = field(default_factory=list)
-    dependencies: Dict[str, Any] = field(default_factory=dict)
-    completed_tasks: List[Any] = field(default_factory=list)
-    failed_tasks: List[Any] = field(default_factory=list)
-    current_phase: str = "initialization"
-from ..llm.ollama_client import OllamaClient
-from .planning_agent import PlanningAgent
-from .coding_agent import CodingAgent
+from agent_core.models import (
+    BuildResult,
+    GenerationRequest,
+    ProjectState,
+    Task,
+    TaskStatus,
+)
 
 
 class Coordinator:
@@ -61,14 +50,8 @@ class Coordinator:
             if hasattr(self.coding_agent, 'initialize'):
                 await self.coding_agent.initialize()
             
-            # Initialize project state
-            self.project_state = ProjectState(
-                tasks=[],
-                dependencies={},
-                completed_tasks=[],
-                failed_tasks=[],
-                current_phase="initialization"
-            )
+            # Reset project state until generation starts
+            self.project_state = None
             
         except Exception as e:
             raise RuntimeError(f"Failed to initialize coordinator: {e}")
@@ -310,34 +293,6 @@ class Coordinator:
             )
             
             self.project_state.build_results.append(build_result)
-            
-            return {"success": build_result.success, "build_result": build_result}
-        
-        return {"success": False, "error": "MCP client not available"}
-        
-        if self.mcp_client:
-            # Use optimized build command for local development
-            build_cmd = f"colcon build --packages-select {package_name} --parallel-workers 2 --cmake-args -DCMAKE_BUILD_TYPE=RelWithDebInfo"
-            
-            result = await self.mcp_client.run_command(
-                build_cmd,
-                cwd=output_dir,
-                timeout=self.timeout_seconds
-            )
-            
-            # Create build result
-            build_result = BuildResult(
-                success=result.get("success", False),
-                output=result.get("stdout", ""),
-                errors=[result.get("stderr", "")] if result.get("stderr") else [],
-                build_time=0.0  # TODO: measure actual build time
-            )
-            
-            self.project_state.build_results.append(build_result)
-            
-            if not build_result.success:
-                # Attempt to fix build errors
-                await self._fix_build_errors(build_result.errors)
             
             return {"success": build_result.success, "build_result": build_result}
         
