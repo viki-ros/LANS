@@ -5,17 +5,12 @@ Allows users to interact with LANS through natural language prompts
 """
 
 import asyncio
-import sys
 from pathlib import Path
 from typing import Optional
 
 import typer
 from rich.console import Console
-from rich.panel import Panel
 from rich.prompt import Prompt
-from rich.text import Text
-from rich.live import Live
-from rich.spinner import Spinner
 from rich.markdown import Markdown
 
 from .core.lans_engine import LANSEngine
@@ -338,37 +333,3 @@ def ail_status(
 
 if __name__ == "__main__":
     app()
-    """Check whether each agent responds to a simple AIL ping."""
-    try:
-        workspace_path = Path(workspace) if workspace else Path.cwd()
-        config = LANSConfig(workspace=workspace_path, model=model, verbose=False)
-        console.print("🔍 Initializing AIL status check...", style="bold blue")
-        client = OllamaClient(config)
-        coord = IntelligentCoordinator(client)
-        # Allow AgentOS and GMCP to initialize
-        time.sleep(2)
-    except Exception as e:
-        console.print(f"❌ Initialization failed: {e}", style="bold red")
-        raise typer.Exit(1)
-
-    async def run_checks():
-        results = {}
-        for name in coord.available_agents.keys():
-            inst = coord._translate_to_ail_instruction(name, "ping")
-            res = await coord._execute_ail_instruction(inst)
-            results[name] = res.get("success", False)
-        return results
-
-    try:
-        results = asyncio.run(run_checks())
-        overall = all(results.values())
-        for name, ok in results.items():
-            icon = "✅" if ok else "❌"
-            console.print(f"{icon} {name}", style="green" if ok else "red")
-        if overall:
-            console.print("🎉 All agents responded successfully via AIL", style="bold green")
-        else:
-            console.print("⚠️ Some agents failed AIL ping", style="bold red")
-    except Exception as e:
-        console.print(f"❌ AIL status check error: {e}", style="bold red")
-        raise typer.Exit(1)
