@@ -71,7 +71,7 @@ LANS is a **research-focused AI platform** featuring:
 
 ### Prerequisites
 
-- Python 3.8+ 
+- Python 3.8+
 - Node.js 16+ (for ICE desktop app)
 - Ollama (for local LLM inference)
 - Git
@@ -88,7 +88,7 @@ python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
 # Install required Python packages
-pip install -r requirements.txt  # Create this file if needed
+pip install -r requirements.txt
 ```
 
 ### 2. Setup Ollama (Local LLM)
@@ -198,7 +198,7 @@ LANS includes an advanced **Global Memory MCP Server** that provides persistent,
 ### Key Features
 
 - **Episodic Memory**: Stores experiences, conversations, and events
-- **Semantic Memory**: Stores facts, concepts, and relationships  
+- **Semantic Memory**: Stores facts, concepts, and relationships
 - **Procedural Memory**: Stores skills, methods, and how-to knowledge
 - **Cross-Agent Knowledge Sharing**: Agents can learn from each other
 - **Persistent Storage**: Memory survives across sessions
@@ -268,7 +268,7 @@ python -m venv venv
 source venv/bin/activate
 
 # Install development dependencies
-pip install -r requirements.txt  # Create as needed
+pip install -r requirements.txt
 pip install pytest black ruff    # Development tools
 ```
 
