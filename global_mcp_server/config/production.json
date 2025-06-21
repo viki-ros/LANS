@@ -1,0 +1,29 @@
+{
+  "memory_system": {
+    "max_memories": 10000,
+    "embedding_dimension": 384,
+    "similarity_threshold": 0.6,
+    "overfitting_prevention": {
+      "enabled": true,
+      "diversity_threshold": 0.8,
+      "max_domain_ratio": 0.9,
+      "collaboration_mode": true
+    }
+  },
+  "collaboration": {
+    "enabled": true,
+    "cross_agent_sharing": true,
+    "memory_quota_per_agent": 200,
+    "collaboration_bonus": 0.4
+  },
+  "performance": {
+    "max_query_results": 50,
+    "embedding_cache_size": 1000,
+    "statistics_update_frequency": 300
+  },
+  "logging": {
+    "level": "INFO",
+    "log_memory_operations": true,
+    "log_overfitting_decisions": false
+  }
+}

@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LANS API Documentation</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: #f8fafc;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            background: #2d3748;
+            color: white;
+            padding: 30px 20px;
+            overflow-y: auto;
+        }
+        
+        .logo {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 30px;
+            color: #63b3ed;
+        }
+        
+        .nav-section {
+            margin-bottom: 30px;
+        }
+        
+        .nav-title {
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #a0aec0;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .nav-item {
+            display: block;
+            color: #e2e8f0;
+            text-decoration: none;
+            padding: 8px 15px;
+            border-radius: 6px;
+            margin-bottom: 5px;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-item:hover, .nav-item.active {
+            background: #4a5568;
+            color: #63b3ed;
+        }
+        
+        .main-content {
+            padding: 40px;
+            overflow-y: auto;
+        }
+        
+        .header {
+            margin-bottom: 40px;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            color: #718096;
+        }
+        
+        .endpoint {
+            background: white;
+            border-radius: 10px;
+            padding: 30px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #63b3ed;
+        }
+        
+        .endpoint h2 {
+            color: #2d3748;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .method {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .method.post { background: #48bb78; color: white; }
+        .method.get { background: #4299e1; color: white; }
+        .method.put { background: #ed8936; color: white; }
+        .method.delete { background: #e53e3e; color: white; }
+        
+        .url {
+            background: #f7fafc;
+            padding: 15px;
+            border-radius: 6px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .description {
+            color: #4a5568;
+            margin-bottom: 20px;
+        }
+        
+        .request-example, .response-example {
+            margin: 20px 0;
+        }
+        
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 6px;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+        }
+        
+        .section-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+        
+        .parameters {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 6px;
+            margin: 15px 0;
+        }
+        
+        .param {
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .param:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+            padding-bottom: 0;
+        }
+        
+        .param-name {
+            font-weight: 600;
+            color: #2d3748;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .param-type {
+            background: #e2e8f0;
+            color: #4a5568;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 10px;
+        }
+        
+        .param-required {
+            background: #fed7d7;
+            color: #e53e3e;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+        
+        .param-description {
+            color: #718096;
+            margin-top: 5px;
+        }
+        
+        .status-badge {
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .status-200 { background: #c6f6d5; color: #22543d; }
+        .status-400 { background: #fed7d7; color: #742a2a; }
+        .status-500 { background: #fed7d7; color: #742a2a; }
+        
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                position: fixed;
+                top: 0;
+                left: -300px;
+                width: 300px;
+                height: 100vh;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+            
+            .sidebar.open {
+                left: 0;
+            }
+            
+            .main-content {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="logo">🧠 LANS API</div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Getting Started</div>
+                <a href="#overview" class="nav-item active">Overview</a>
+                <a href="#authentication" class="nav-item">Authentication</a>
+                <a href="#errors" class="nav-item">Error Handling</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Cognition</div>
+                <a href="#cognition-execute" class="nav-item">Execute Cognition</a>
+                <a href="#cognition-status" class="nav-item">Get Status</a>
+                <a href="#cognition-history" class="nav-item">View History</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Memory</div>
+                <a href="#memory-query" class="nav-item">Query Memory</a>
+                <a href="#memory-store" class="nav-item">Store Memory</a>
+                <a href="#memory-stats" class="nav-item">Memory Stats</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">Agents</div>
+                <a href="#agents-list" class="nav-item">List Agents</a>
+                <a href="#agents-status" class="nav-item">Agent Status</a>
+                <a href="#agents-control" class="nav-item">Control Agents</a>
+            </div>
+            
+            <div class="nav-section">
+                <div class="nav-title">System</div>
+                <a href="#system-health" class="nav-item">Health Check</a>
+                <a href="#system-metrics" class="nav-item">System Metrics</a>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="header">
+                <h1>LANS API Documentation</h1>
+                <p>RESTful API for the Learning Agent Network System (LANS) - Global Memory MCP Server</p>
+            </div>
+            
+            <!-- Execute Cognition Endpoint -->
+            <div class="endpoint" id="cognition-execute">
+                <h2>
+                    <span class="method post">POST</span>
+                    Execute AIL Cognition
+                </h2>
+                <div class="url">POST /api/v1/cognition</div>
+                <div class="description">
+                    Execute an AIL (Agent Interaction Language) cognition request through the AgentOS kernel. 
+                    This is the primary endpoint for processing intelligent requests.
+                </div>
+                
+                <div class="section-title">Request Parameters</div>
+                <div class="parameters">
+                    <div class="param">
+                        <span class="param-name">ail_code</span>
+                        <span class="param-type">string</span>
+                        <span class="param-required">required</span>
+                        <div class="param-description">
+                            The AIL code to execute. Supports QUERY, EXECUTE, PLAN operations.
+                        </div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">agent_id</span>
+                        <span class="param-type">string</span>
+                        <span class="param-required">required</span>
+                        <div class="param-description">
+                            Unique identifier for the requesting agent.
+                        </div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">execution_mode</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">
+                            Execution mode: "safe", "fast", or "comprehensive". Default: "safe"
+                        </div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">timeout</span>
+                        <span class="param-type">integer</span>
+                        <div class="param-description">
+                            Timeout in seconds. Default: 30, Max: 300
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Example Request</div>
+                <div class="code-block">
+{
+  "ail_code": "(QUERY {\"intent\": \"find Python debugging strategies\", \"mode\": \"explore\"})",
+  "agent_id": "coding_agent_001",
+  "execution_mode": "comprehensive",
+  "timeout": 60
+}</div>
+                
+                <div class="section-title">Response</div>
+                <div class="code-block">
+{
+  "success": true,
+  "cognition_id": "cog_789123456",
+  "execution_time_ms": 1247,
+  "agent_assigned": "coding-agent",
+  "result": {
+    "type": "query_result",
+    "results": [
+      {
+        "type": "episodic",
+        "content": "Successfully debugged infinite loop using pdb...",
+        "confidence": 0.92,
+        "timestamp": "2024-12-10T14:23:15Z"
+      },
+      {
+        "type": "semantic", 
+        "concept": "Python Debugging Tools",
+        "definition": "pdb, logging, print statements...",
+        "confidence": 0.96
+      }
+    ],
+    "memory_updated": true,
+    "suggestions": [
+      "Consider using logging instead of print statements",
+      "Set breakpoints strategically with pdb"
+    ]
+  },
+  "metadata": {
+    "memory_entries_accessed": 23,
+    "new_memories_created": 1,
+    "processing_steps": 5
+  }
+}</div>
+                
+                <div class="section-title">Response Codes</div>
+                <div>
+                    <span class="status-badge status-200">200 OK</span> - Cognition executed successfully<br><br>
+                    <span class="status-badge status-400">400 Bad Request</span> - Invalid AIL syntax or parameters<br><br>
+                    <span class="status-badge status-500">500 Internal Server Error</span> - Server error during execution
+                </div>
+            </div>
+            
+            <!-- Query Memory Endpoint -->
+            <div class="endpoint" id="memory-query">
+                <h2>
+                    <span class="method post">POST</span>
+                    Query Global Memory
+                </h2>
+                <div class="url">POST /api/v1/memory/query</div>
+                <div class="description">
+                    Search the global memory system using natural language or structured queries. 
+                    Returns relevant episodic, semantic, and procedural memories.
+                </div>
+                
+                <div class="section-title">Request Parameters</div>
+                <div class="parameters">
+                    <div class="param">
+                        <span class="param-name">query</span>
+                        <span class="param-type">string</span>
+                        <span class="param-required">required</span>
+                        <div class="param-description">
+                            Natural language query or structured search criteria.
+                        </div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">memory_types</span>
+                        <span class="param-type">array</span>
+                        <div class="param-description">
+                            Filter by memory types: ["episodic", "semantic", "procedural"]. Default: all types
+                        </div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">limit</span>
+                        <span class="param-type">integer</span>
+                        <div class="param-description">
+                            Maximum number of results to return. Default: 10, Max: 100
+                        </div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">min_confidence</span>
+                        <span class="param-type">float</span>
+                        <div class="param-description">
+                            Minimum confidence score for results (0.0-1.0). Default: 0.5
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Example Request</div>
+                <div class="code-block">
+{
+  "query": "debugging techniques for Python applications",
+  "memory_types": ["semantic", "procedural"],
+  "limit": 5,
+  "min_confidence": 0.8
+}</div>
+                
+                <div class="section-title">Response</div>
+                <div class="code-block">
+{
+  "success": true,
+  "query": "debugging techniques for Python applications",
+  "total_results": 5,
+  "search_time_ms": 234,
+  "results": [
+    {
+      "type": "semantic",
+      "id": "sem_456789",
+      "concept": "Python Debugging Tools",
+      "definition": "Tools and techniques for debugging Python code...",
+      "confidence": 0.96,
+      "domain": "software_development",
+      "last_updated": "2024-12-10T10:15:30Z"
+    },
+    {
+      "type": "procedural", 
+      "id": "proc_123456",
+      "skill_name": "Step-by-step debugging process",
+      "procedure": "1. Reproduce bug 2. Add logging 3. Set breakpoints...",
+      "success_rate": 0.94,
+      "usage_count": 67,
+      "confidence": 0.89
+    }
+  ]
+}</div>
+            </div>
+            
+            <!-- Agent List Endpoint -->
+            <div class="endpoint" id="agents-list">
+                <h2>
+                    <span class="method get">GET</span>
+                    List All Agents
+                </h2>
+                <div class="url">GET /api/v1/agents</div>
+                <div class="description">
+                    Retrieve a list of all agents in the LANS network with their current status and performance metrics.
+                </div>
+                
+                <div class="section-title">Query Parameters</div>
+                <div class="parameters">
+                    <div class="param">
+                        <span class="param-name">status</span>
+                        <span class="param-type">string</span>
+                        <div class="param-description">
+                            Filter by status: "active", "idle", "busy", "offline"
+                        </div>
+                    </div>
+                    <div class="param">
+                        <span class="param-name">include_metrics</span>
+                        <span class="param-type">boolean</span>
+                        <div class="param-description">
+                            Include performance metrics in response. Default: false
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section-title">Example Response</div>
+                <div class="code-block">
+{
+  "success": true,
+  "total_agents": 4,
+  "active_agents": 3,
+  "agents": [
+    {
+      "id": "planning-agent",
+      "name": "Planning Agent",
+      "type": "planning",
+      "status": "active",
+      "last_seen": "2024-12-12T15:30:45Z",
+      "capabilities": ["task_planning", "resource_optimization", "strategy_development"],
+      "metrics": {
+        "tasks_completed": 342,
+        "success_rate": 0.985,
+        "avg_response_time_ms": 1200,
+        "current_load": 0.45
+      }
+    },
+    {
+      "id": "coding-agent", 
+      "name": "Coding Agent",
+      "type": "coding",
+      "status": "busy",
+      "last_seen": "2024-12-12T15:30:42Z",
+      "capabilities": ["code_analysis", "bug_detection", "optimization"],
+      "metrics": {
+        "tasks_completed": 189,
+        "success_rate": 0.952,
+        "avg_response_time_ms": 2800,
+        "current_load": 0.78
+      }
+    }
+  ]
+}</div>
+            </div>
+            
+            <!-- System Health Endpoint -->
+            <div class="endpoint" id="system-health">
+                <h2>
+                    <span class="method get">GET</span>
+                    System Health Check
+                </h2>
+                <div class="url">GET /api/v1/system/health</div>
+                <div class="description">
+                    Get comprehensive health status of all LANS components including AgentOS kernel, 
+                    memory system, database, and agent network.
+                </div>
+                
+                <div class="section-title">Response</div>
+                <div class="code-block">
+{
+  "success": true,
+  "overall_status": "healthy",
+  "timestamp": "2024-12-12T15:30:45Z",
+  "components": {
+    "agentos_kernel": {
+      "status": "running",
+      "version": "1.0.0",
+      "memory_usage_mb": 245,
+      "cpu_usage_percent": 15,
+      "uptime_seconds": 1342567
+    },
+    "global_memory": {
+      "status": "running",
+      "port": 8001,
+      "memory_entries": 15247,
+      "avg_query_time_ms": 340,
+      "cache_hit_rate": 0.87
+    },
+    "database": {
+      "status": "connected",
+      "type": "postgresql",
+      "version": "14.2",
+      "active_connections": 8,
+      "max_connections": 20,
+      "storage_used_gb": 2.3
+    },
+    "agent_network": {
+      "status": "operational",
+      "active_agents": 4,
+      "total_agents": 4,
+      "avg_response_time_ms": 1400,
+      "success_rate": 0.982
+    }
+  },
+  "performance": {
+    "requests_today": 12847,
+    "avg_response_time_ms": 1234,
+    "error_rate": 0.018,
+    "peak_memory_mb": 3100,
+    "peak_cpu_percent": 45
+  },
+  "recommendations": [
+    "System performance is excellent",
+    "Consider expanding agent pool if load increases", 
+    "Memory consolidation scheduled for tonight"
+  ]
+}</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simple navigation highlighting
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+                this.classList.add('active');
+                
+                const target = this.getAttribute('href').substring(1);
+                const element = document.getElementById(target);
+                if (element) {
+                    element.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+        
+        // Mobile sidebar toggle (if needed)
+        if (window.innerWidth <= 768) {
+            const sidebar = document.querySelector('.sidebar');
+            const toggleBtn = document.createElement('button');
+            toggleBtn.innerHTML = '☰';
+            toggleBtn.style.cssText = `
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                z-index: 1001;
+                background: #2d3748;
+                color: white;
+                border: none;
+                padding: 10px;
+                border-radius: 5px;
+                font-size: 1.2rem;
+            `;
+            document.body.appendChild(toggleBtn);
+            
+            toggleBtn.addEventListener('click', () => {
+                sidebar.classList.toggle('open');
+            });
+        }
+    </script>
+</body>
+</html>

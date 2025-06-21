@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=61.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "lans-ice-agent-host"
+version = "0.1.0"
+description = "LANS ICE Agent Host - Backend service for LANS Integrated Cognitive Environment"
+authors = [
+    {name = "LANS Team", email = "team@lans.dev"}
+]
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.9"
+dependencies = [
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "websockets>=12.0",
+    "watchdog>=3.0.0",
+    "pexpect>=4.8.0",
+    "aiofiles>=23.2.0",
+    "pydantic>=2.5.0",
+    "python-multipart>=0.0.6",
+    "httpx>=0.25.0",
+    "beautifulsoup4>=4.12.0",
+    "markdown>=3.5.0",
+    "psutil>=5.9.0"
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.4.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "isort>=5.12.0",
+    "mypy>=1.6.0",
+    "pre-commit>=3.5.0"
+]
+
+[project.urls]
+Homepage = "https://github.com/lans-team/lans"
+Repository = "https://github.com/lans-team/lans"
+Documentation = "https://docs.lans.dev"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["lans_host*"]
+
+[tool.black]
+line-length = 88
+target-version = ['py39']
+
+[tool.isort]
+profile = "black"
+line_length = 88
+
+[tool.mypy]
+python_version = "3.9"
+strict = true
+warn_return_any = true
+warn_unused_configs = true

@@ -1,0 +1,386 @@
+"""
+Terminal Manager for LANS ICE
+
+Manages terminal sessions and provides real-time terminal access
+for the Live Workspace view. Supports multiple concurrent terminals.
+"""
+
+import asyncio
+import logging
+import os
+import pty
+import select
+import signal
+import subprocess
+import uuid
+from typing import Dict, Optional, Callable, Any
+import pexpect
+
+from ..websocket.manager import WebSocketManager
+
+logger = logging.getLogger(__name__)
+
+
+class TerminalSession:
+    """Represents a single terminal session"""
+    
+    def __init__(self, session_id: str, websocket_manager: WebSocketManager):
+        self.session_id = session_id
+        self.websocket_manager = websocket_manager
+        self.process: Optional[pexpect.spawn] = None
+        self.is_active = False
+        self.working_directory = os.getcwd()
+        self.shell = os.getenv('SHELL', '/bin/bash')
+        self.history: list = []
+        self.max_history = 1000
+    
+    async def start(self):
+        """Start the terminal session"""
+        try:
+            # Start shell process with pty
+            self.process = pexpect.spawn(
+                self.shell,
+                cwd=self.working_directory,
+                timeout=None,
+                encoding='utf-8',
+                codec_errors='replace'
+            )
+            
+            # Set terminal size
+            self.process.setwinsize(24, 80)
+            
+            self.is_active = True
+            
+            # Start background task to read output
+            asyncio.create_task(self._read_output())
+            
+            logger.info(f"Terminal session {self.session_id} started")
+            
+            # Send initial prompt
+            await self._send_output(f"Terminal session {self.session_id} ready\r\n")
+            
+        except Exception as e:
+            logger.error(f"Error starting terminal session {self.session_id}: {e}")
+            raise
+    
+    async def stop(self):
+        """Stop the terminal session"""
+        try:
+            self.is_active = False
+            
+            if self.process and self.process.isalive():
+                self.process.terminate()
+                self.process.wait()
+            
+            logger.info(f"Terminal session {self.session_id} stopped")
+            
+        except Exception as e:
+            logger.error(f"Error stopping terminal session {self.session_id}: {e}")
+    
+    async def send_input(self, data: str):
+        """Send input to the terminal"""
+        try:
+            logger.debug(f"Terminal {self.session_id[:8]} received input: {repr(data)}")
+            if self.process and self.process.isalive():
+                logger.debug(f"Process is alive, sending data to terminal")
+                self.process.send(data)
+                
+                # Add to history if it's a command (ends with newline)
+                if data.endswith('\n') or data.endswith('\r'):
+                    command = data.strip()
+                    if command:
+                        logger.debug(f"Adding to history: {command}")
+                        self._add_to_history(command)
+            else:
+                logger.warning(f"Terminal process not alive for session {self.session_id}")
+                        
+        except Exception as e:
+            logger.error(f"Error sending input to terminal {self.session_id}: {e}")
+    
+    async def _read_output(self):
+        """Read output from the terminal process"""
+        while self.is_active and self.process and self.process.isalive():
+            try:
+                # Read output with timeout
+                output = self.process.read_nonblocking(size=1024, timeout=0.1)
+                if output:
+                    await self._send_output(output)
+                    
+            except pexpect.TIMEOUT:
+                # Normal timeout, continue reading
+                continue
+            except pexpect.EOF:
+                # Process ended
+                self.is_active = False
+                await self._send_output("\r\n[Process ended]\r\n")
+                break
+            except Exception as e:
+                logger.error(f"Error reading terminal output {self.session_id}: {e}")
+                await asyncio.sleep(0.1)
+    
+    async def _send_output(self, data: str):
+        """Send output to connected clients"""
+        await self.websocket_manager.broadcast({
+            "type": "terminal_output",
+            "session_id": self.session_id,
+            "data": data,
+            "timestamp": self._get_timestamp()
+        })
+    
+    def _add_to_history(self, command: str):
+        """Add command to history"""
+        self.history.append({
+            "command": command,
+            "timestamp": self._get_timestamp()
+        })
+        
+        # Limit history size
+        if len(self.history) > self.max_history:
+            self.history = self.history[-self.max_history:]
+    
+    def get_history(self, limit: Optional[int] = None) -> list:
+        """Get command history"""
+        if limit is None:
+            return self.history.copy()
+        else:
+            return self.history[-limit:] if limit > 0 else []
+    
+    def resize(self, rows: int, cols: int):
+        """Resize the terminal"""
+        try:
+            if self.process and self.process.isalive():
+                self.process.setwinsize(rows, cols)
+        except Exception as e:
+            logger.error(f"Error resizing terminal {self.session_id}: {e}")
+    
+    def get_status(self) -> Dict[str, Any]:
+        """Get terminal session status"""
+        return {
+            "session_id": self.session_id,
+            "is_active": self.is_active,
+            "working_directory": self.working_directory,
+            "shell": self.shell,
+            "process_alive": self.process.isalive() if self.process else False,
+            "history_length": len(self.history)
+        }
+    
+    @staticmethod
+    def _get_timestamp() -> str:
+        """Get current timestamp"""
+        from datetime import datetime
+        return datetime.utcnow().isoformat() + "Z"
+
+
+class TerminalManager:
+    """Manages multiple terminal sessions"""
+    
+    def __init__(self, websocket_manager: WebSocketManager):
+        self.websocket_manager = websocket_manager
+        self.sessions: Dict[str, TerminalSession] = {}
+        self.max_sessions = 10
+        self.is_running = False
+    
+    async def start(self):
+        """Start the terminal manager"""
+        self.is_running = True
+        logger.info("Terminal manager started")
+        
+        # Start monitoring task
+        asyncio.create_task(self._monitor_sessions())
+    
+    async def stop(self):
+        """Stop the terminal manager"""
+        self.is_running = False
+        
+        # Stop all sessions
+        for session in list(self.sessions.values()):
+            await session.stop()
+        
+        self.sessions.clear()
+        logger.info("Terminal manager stopped")
+    
+    async def create_session(self, working_directory: Optional[str] = None) -> str:
+        """Create a new terminal session"""
+        try:
+            # Check session limit
+            if len(self.sessions) >= self.max_sessions:
+                # Remove oldest inactive session
+                await self._cleanup_inactive_sessions()
+                
+                if len(self.sessions) >= self.max_sessions:
+                    raise RuntimeError("Maximum number of terminal sessions reached")
+            
+            # Generate session ID
+            session_id = str(uuid.uuid4())
+            
+            # Create session
+            session = TerminalSession(session_id, self.websocket_manager)
+            
+            if working_directory:
+                session.working_directory = working_directory
+            
+            # Start the session
+            await session.start()
+            
+            # Store session
+            self.sessions[session_id] = session
+            
+            # Notify clients
+            await self.websocket_manager.broadcast({
+                "type": "terminal_created",
+                "session_id": session_id,
+                "working_directory": session.working_directory,
+                "timestamp": self._get_timestamp()
+            })
+            
+            logger.info(f"Created terminal session {session_id}")
+            return session_id
+            
+        except Exception as e:
+            logger.error(f"Error creating terminal session: {e}")
+            raise
+    
+    async def destroy_session(self, session_id: str) -> bool:
+        """Destroy a terminal session"""
+        try:
+            if session_id not in self.sessions:
+                return False
+            
+            session = self.sessions[session_id]
+            await session.stop()
+            del self.sessions[session_id]
+            
+            # Notify clients
+            await self.websocket_manager.broadcast({
+                "type": "terminal_destroyed",
+                "session_id": session_id,
+                "timestamp": self._get_timestamp()
+            })
+            
+            logger.info(f"Destroyed terminal session {session_id}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Error destroying terminal session {session_id}: {e}")
+            return False
+    
+    async def send_input(self, session_id: str, data: str):
+        """Send input to a terminal session"""
+        try:
+            logger.debug(f"TerminalManager.send_input called for session {session_id} with data: {repr(data)}")
+            if session_id not in self.sessions:
+                logger.error(f"Terminal session {session_id} not found in {list(self.sessions.keys())}")
+                raise ValueError(f"Terminal session {session_id} not found")
+            
+            session = self.sessions[session_id]
+            logger.debug(f"Found session, calling session.send_input")
+            await session.send_input(data)
+            logger.debug(f"Session.send_input completed successfully")
+            
+        except Exception as e:
+            logger.error(f"Error sending input to terminal {session_id}: {e}")
+            raise
+    
+    async def resize_session(self, session_id: str, rows: int, cols: int):
+        """Resize a terminal session"""
+        try:
+            if session_id not in self.sessions:
+                raise ValueError(f"Terminal session {session_id} not found")
+            
+            session = self.sessions[session_id]
+            session.resize(rows, cols)
+            
+        except Exception as e:
+            logger.error(f"Error resizing terminal {session_id}: {e}")
+            raise
+    
+    async def resize_terminal(self, session_id: str, cols: int, rows: int):
+        """Resize a terminal session (alias for resize_session with swapped params)"""
+        await self.resize_session(session_id, rows, cols)
+    
+    def get_session(self, session_id: str) -> Optional[TerminalSession]:
+        """Get a terminal session"""
+        return self.sessions.get(session_id)
+    
+    def get_all_sessions(self) -> Dict[str, TerminalSession]:
+        """Get all terminal sessions"""
+        return self.sessions.copy()
+    
+    def get_session_list(self) -> list:
+        """Get list of session information"""
+        return [session.get_status() for session in self.sessions.values()]
+    
+    async def _monitor_sessions(self):
+        """Monitor terminal sessions"""
+        while self.is_running:
+            try:
+                # Check for dead sessions
+                dead_sessions = []
+                for session_id, session in self.sessions.items():
+                    if not session.is_active or (session.process and not session.process.isalive()):
+                        dead_sessions.append(session_id)
+                
+                # Clean up dead sessions
+                for session_id in dead_sessions:
+                    await self.destroy_session(session_id)
+                
+                # Broadcast session status
+                if self.sessions:
+                    await self.websocket_manager.broadcast({
+                        "type": "terminal_status",
+                        "sessions": self.get_session_list(),
+                        "timestamp": self._get_timestamp()
+                    })
+                
+                # Check every 5 seconds
+                await asyncio.sleep(5)
+                
+            except Exception as e:
+                logger.error(f"Error monitoring terminal sessions: {e}")
+                await asyncio.sleep(1)
+    
+    async def _cleanup_inactive_sessions(self):
+        """Clean up inactive terminal sessions"""
+        try:
+            inactive_sessions = [
+                session_id for session_id, session in self.sessions.items()
+                if not session.is_active or (session.process and not session.process.isalive())
+            ]
+            
+            for session_id in inactive_sessions:
+                await self.destroy_session(session_id)
+                
+            logger.info(f"Cleaned up {len(inactive_sessions)} inactive terminal sessions")
+            
+        except Exception as e:
+            logger.error(f"Error cleaning up inactive sessions: {e}")
+    
+    async def execute_command(self, command: str, working_directory: Optional[str] = None) -> str:
+        """Execute a command and return the session ID"""
+        try:
+            # Create new session
+            session_id = await self.create_session(working_directory)
+            
+            # Send command
+            await self.send_input(session_id, command + '\n')
+            
+            return session_id
+            
+        except Exception as e:
+            logger.error(f"Error executing command: {e}")
+            raise
+    
+    def get_status(self) -> Dict[str, Any]:
+        """Get terminal manager status"""
+        return {
+            "is_running": self.is_running,
+            "active_sessions": len(self.sessions),
+            "max_sessions": self.max_sessions,
+            "sessions": self.get_session_list()
+        }
+    
+    @staticmethod
+    def _get_timestamp() -> str:
+        """Get current timestamp"""
+        from datetime import datetime
+        return datetime.utcnow().isoformat() + "Z"

@@ -1,0 +1,226 @@
+Agent Instruction Language (AIL) - Version 3.1 "Hardened Kernel"
+Official Technical Manual & Language Reference
+
+Document ID: AIL-MANUAL-v3.1-FINAL
+Status: Official Release
+
+1. Core Philosophy
+
+AIL is a formal language for an AI agent to express its cognitive intent. It is not a programming language. An agent states what it wants to achieve, and the AgentOS Kernel determines how to execute it efficiently and safely.
+
+Declarative & Intent-Driven: Focuses on the goal, not the implementation steps.
+
+Code as Data (Homoiconic): An AIL expression is a data structure that can be stored, analyzed, and even modified by the LANS itself, which is the foundation of true learning.
+
+Verifiable & Auditable: The formal structure allows every thought process to be logged and debugged with perfect clarity.
+
+2. The Atoms of AIL
+
+Every AIL expression, or cognition, is built from four fundamental components:
+
+Component	Syntax	Description
+Cognition	(...)	The fundamental unit of thought. A list structure containing an Operation and its arguments.
+Operation	KEYWORD	A reserved, capitalized keyword that is the first element of a cognition, defining its primary intent (e.g., QUERY).
+Entity	[...]	A pointer to a specific concept, object, or piece of data known to the LANS (e.g., [tool_shell]). It is semantically defined by its vector embedding.
+Metadata	{...}	A JSON-like object providing context, constraints, or modifiers to a cognition (e.g., {"timeout": "5m"}).
+3. The AIL-3.1 Instruction Set (Operations)
+
+This section details the complete set of official operations for the "Hardened Kernel" edition.
+
+3.1. Core Operations
+
+(QUERY {metadata})
+
+Purpose: The intelligent heart of AIL. Used for all memory retrieval, exploration, and synthesis tasks. The agent provides a high-level intent, and the Kernel's query planner devises the optimal multi-stage search strategy.
+
+Example:
+
+Generated lisp
+(QUERY {"intent": "Find the root cause analysis report for the server outage on May 30th"})
+
+
+(PLAN {metadata} (cognition_1) (cognition_2) ...)
+
+Purpose: Defines an explicit, sequential workflow of sub-cognitions. Used when the agent needs to enforce a specific order of operations.
+
+Example:
+
+Generated lisp
+(PLAN {"goal": "Process daily sales data"}
+  (QUERY {"intent": "Fetch all sales data from the last 24 hours"})
+  (SANDBOXED-EXECUTE [tool_data_processor] [ ... ])
+)
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Lisp
+IGNORE_WHEN_COPYING_END
+
+(COMMUNICATE [recipient_entity] (cognition_to_send))
+
+Purpose: The primitive for multi-agent communication. Sends a complete AIL cognition as a message to another agent.
+
+Example:
+
+Generated lisp
+(COMMUNICATE [agent_researcher] 
+  (QUERY {"intent": "Find all recent papers on quantum computing"})
+)
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Lisp
+IGNORE_WHEN_COPYING_END
+3.2. Flow Control & Resilience Operations
+
+(LET ((var_1 cognition_1) (var_2 cognition_2)) (main_cognition))
+
+Purpose: To solve data flow issues by creating a temporary, scoped context. It executes cognitions, binds their results to named variables, and makes those variables available to a final cognition.
+
+Example:
+
+Generated lisp
+(LET (
+    (report_data (QUERY {"intent": "Get Q3 financial data"}))
+  )
+  (SANDBOXED-EXECUTE [tool_report_generator] [report_data])
+)
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Lisp
+IGNORE_WHEN_COPYING_END
+
+(TRY (attempt_cognition) ON-FAIL (fallback_cognition))
+
+Purpose: Provides fault tolerance. It executes a primary cognition and, if it fails, executes a secondary, recovery cognition.
+
+Example:
+
+Generated lisp
+(TRY 
+  (SANDBOXED-EXECUTE [tool_primary_api] [{}])
+  ON-FAIL
+  (SANDBOXED-EXECUTE [tool_secondary_api] [{}])
+)
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Lisp
+IGNORE_WHEN_COPYING_END
+
+(AWAIT (event_cognition) {timeout})
+
+Purpose: Pauses a plan's execution until a specified event occurs, with an optional timeout. Essential for coordinating asynchronous tasks.
+
+Example:
+
+Generated lisp
+(AWAIT (EVENT {type="message_received", source=[agent_analyzer]}) {timeout="5m"})
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Lisp
+IGNORE_WHEN_COPYING_END
+3.3. Security & Interaction Operations
+
+(SANDBOXED-EXECUTE [tool] [params] {policy})
+
+Purpose: The mandatory operation for all tool use. It commands the Kernel to execute a tool within a secure, isolated sandbox with strict resource limits and permissions. This is the cornerstone of LANS safety.
+
+Example:
+
+Generated lisp
+(SANDBOXED-EXECUTE [tool_code_interpreter] ["print('hello')"] 
+  {"policy": {"network_access": "none", "cpu_limit_ms": 1000}}
+)
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Lisp
+IGNORE_WHEN_COPYING_END
+
+(CLARIFY { ... })
+
+Purpose: This is a response from the Kernel, not a command from an agent. The Kernel sends this when a QUERY intent is too ambiguous. The agent must then handle this response, typically by asking the user for more information.
+
+Example (Kernel to Agent):
+
+Generated lisp
+(CLARIFY 
+  {
+    "ambiguous_intent": "Find the report about Phoenix",
+    "clarification_prompt": "Which 'Phoenix' do you mean? The 'Project Phoenix Proposal' or the 'Phoenix Financial Report'?"
+  }
+)
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Lisp
+IGNORE_WHEN_COPYING_END
+4. Putting It All Together: A Complete Example
+
+This example shows how LET solves the result-passing problem we identified in our stress tests.
+
+The Goal: Run a test, and if it succeeds, notify the team with the results.
+
+The Flawed AIL-3.0 Approach:
+
+Generated lisp
+(PLAN {"goal": "Run test and notify"}
+  ; The result of this EXECUTE is lost. There is no way to reference it.
+  (SANDBOXED-EXECUTE [tool_test_runner] [{}])
+  
+  ; This cannot work because '$test_results' is not a defined concept in AIL-3.0
+  (COMMUNICATE [agent_alerter] (EXECUTE [tool_slack_sender] [{"msg": "$test_results"}]))
+)
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Lisp
+IGNORE_WHEN_COPYING_END
+
+The Correct, Robust AIL-3.1 Solution:
+
+Generated lisp
+(PLAN {"goal": "Run test and notify"}
+  ; Create a scope and define the 'test_results' variable.
+  (LET (
+      (test_results (SANDBOXED-EXECUTE [tool_test_runner] [{}]))
+    )
+    ; The 'test_results' variable is now a usable entity in this block.
+    (TRY
+      ; Check if the 'success' key in the result is true.
+      (EVAL [test_results] (EQUAL (GET_KEY [test_results] ["success"]) [true]))
+      
+      ; If the TRY block succeeds, run this success notification.
+      (COMMUNICATE [agent_alerter] 
+        (EXECUTE [tool_slack_sender] [{"channel": "#alerts-success", "msg": [test_results]}])
+      )
+
+      ON-FAIL
+      ; If the TRY block fails (test was not successful), run this failure notification.
+      (COMMUNICATE [agent_alerter] 
+        (EXECUTE [tool_slack_sender] [{"channel": "#alerts-failure", "msg": [test_results]}])
+      )
+    )
+  )
+)
+IGNORE_WHEN_COPYING_START
+content_copy
+download
+Use code with caution.
+Lisp
+IGNORE_WHEN_COPYING_END
+
+This demonstrates how the new primitives work together to create complex, robust, and stateful cognitive workflows.
+
+This manual provides the complete technical foundation for developing with and for the LANS. It is the definitive guide to the language of thought.
