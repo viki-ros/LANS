@@ -94,12 +94,6 @@ class InsightResponse(BaseModel):
     recommendations: List[str]
 
 
-class StoreMemoryResponse(BaseModel):
-    memory_id: str
-    success: bool
-    message: str
-
-
 class GlobalMCPServer:
     """
     Global Memory MCP Server providing HTTP API access to persistent
