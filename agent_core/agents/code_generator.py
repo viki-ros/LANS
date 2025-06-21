@@ -2,7 +2,7 @@
 Code Generator Agent - Generates code based on requirements
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List
 from ..llm.ollama_client import OllamaClient
 
 class CodeGenerator:
@@ -17,7 +17,7 @@ class CodeGenerator:
         # Determine file type from extension
         file_ext = filename.split('.')[-1].lower() if '.' in filename else ''
         
-        system_prompt = f"""
+        system_prompt = """
         You are an expert programmer. Generate clean, well-documented code.
         Always include appropriate comments and follow best practices.
         """
@@ -70,7 +70,7 @@ class CodeGenerator:
     async def generate_project(self, project_type: str, description: str, requirements: List[str]) -> Dict[str, str]:
         """Generate a complete project structure"""
         
-        system_prompt = f"""
+        system_prompt = """
         You are an expert software architect. Create complete, production-ready project structures.
         Always include proper configuration files, documentation, and best practices.
         """
