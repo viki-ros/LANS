@@ -1,202 +1,199 @@
 # LANS - Large Artificial Neural System
 
-**Universal AI Software Generation Platform**
+**Advanced Multi-Agent AI Platform with Cognitive Architecture**
 
-A sophisticated AI system that transforms natural language requests into complete software projects. LANS uses multi-agent architecture with persistent memory to generate any type of software - from simple scripts to complex applications.
+LANS is a sophisticated multi-agent AI system that combines cognitive agents, persistent memory, and a desktop interface (ICE) for advanced AI interactions and development workflows.
+
+## 🎯 Current Status
+
+**LANS is currently in active development.** The system includes several working components but is not yet ready for general production use. This README reflects the **actual current state** of the project.
 
 ## 🚀 What is LANS?
 
-LANS is a **general-purpose AI software generation platform** that can create:
+LANS is a **research-focused AI platform** featuring:
 
-- **Web Applications** (React, Vue, Next.js, Flask, FastAPI)
-- **CLI Tools** (Python, Node.js, Rust, Go)
-- **Desktop Applications** (Electron, Tkinter, PyQt)
-- **APIs and Microservices** (REST, GraphQL, gRPC)
-- **Mobile Apps** (React Native, Flutter basics)
-- **Games** (Pygame, JavaScript canvas)
-- **Data Science Projects** (Jupyter notebooks, analysis scripts)
-- **Simple Utilities** (calculators, file processors, converters)
+- **🧠 Cognitive Agents**: Advanced AI agents with memory, reasoning, and self-reflection capabilities
+- **💾 Global Memory System**: Persistent, shared memory across AI agents and sessions
+- **🖥️ ICE Desktop App**: Modern desktop interface for AI interactions
+- **🔗 MCP Integration**: Model Context Protocol for secure agent operations
+- **🔄 Multi-Agent Architecture**: Coordinated agents for complex tasks
 
-## ✨ Key Features
+## ✨ Current Features
 
-### 🧠 Multi-Agent Intelligence
-- **Planning Agent**: Analyzes requirements and creates project architecture
-- **Coding Agent**: Generates production-ready code with best practices
-- **Coordinator**: Orchestrates workflow and handles error recovery
+### 🧠 Cognitive Agent System
+- **Memory & Reasoning**: Agents with episodic, semantic, and procedural memory
+- **Self-Reflection**: Agents that learn from experiences and improve over time
+- **Goal-Oriented Behavior**: Task-focused AI with performance tracking
+- **Multi-Model Support**: Integration with various LLMs via Ollama
 
-### 🔄 Autonomous Generation
-```bash
-# Simple folder creation
-lans "create folder my_project"
+### 💾 Global Memory MCP Server
+- **Persistent Storage**: Knowledge that survives across sessions
+- **Cross-Agent Sharing**: Agents can learn from each other's experiences
+- **Vector-Based Retrieval**: Intelligent memory search and recall
+- **Memory Types**: Episodic (events), Semantic (facts), Procedural (skills)
 
-# File creation with content
-lans "create file hello.py with a simple greeting"
-
-# Complete application
-lans "create a calculator app with GUI"
-
-# Web application
-lans "create a todo app with React and FastAPI backend"
-```
-
-### 🧠 Persistent Memory System
-- **Global Memory**: Learns from every project and improves over time
-- **Pattern Recognition**: Remembers successful architectures and solutions
-- **Cross-Project Learning**: Knowledge transfers between different types of projects
-
-### 🔐 Secure Execution
-- **Sandboxed Environment**: Safe code execution and testing
-- **MCP Protocol**: Secure file operations and command execution
-- **Error Recovery**: Automatic detection and fixing of issues
+### �️ ICE Desktop Application
+- **Modern UI**: React + Tauri-based desktop application
+- **Terminal Integration**: Built-in terminal with xterm.js
+- **Code Editor**: Monaco editor integration
+- **Real-time Interaction**: Live AI agent communication
 
 ## 🏗️ Architecture
 
 ```
 ┌─────────────────────────────────────────────────────────────┐
-│                  LANS Core System                          │
+│                     LANS Platform                          │
 ├─────────────────────────────────────────────────────────────┤
 │  ┌─────────────┐    ┌─────────────┐    ┌─────────────┐    │
-│  │  Planning   │◄──►│ Coordinator │◄──►│   Coding    │    │
-│  │   Agent     │    │             │    │   Agent     │    │
-│  │             │    │ Orchestrates│    │             │    │
-│  │ • Analyzes  │    │ workflow &  │    │ • Generates │    │
-│  │ • Plans     │    │ manages     │    │ • Implements│    │
-│  │ • Designs   │    │ state       │    │ • Tests     │    │
+│  │  Cognitive  │◄──►│    ICE      │◄──►│   Global    │    │
+│  │   Agents    │    │  Desktop    │    │   Memory    │    │
+│  │             │    │    App      │    │             │    │
+│  │ • Memory    │    │ • Terminal  │    │ • Episodic  │    │
+│  │ • Reasoning │    │ • Editor    │    │ • Semantic  │    │
+│  │ • Learning  │    │ • Chat UI   │    │ • Procedural│    │
 │  └─────────────┘    └─────────────┘    └─────────────┘    │
 │         │                   │                   │         │
 │         └───────────────────┼───────────────────┘         │
 │                             │                             │
 │  ┌─────────────────────────────────────────────────────┐  │
-│  │              MCP Server (Security Layer)           │  │
-│  │  ┌─────────────┐ ┌─────────────┐ ┌─────────────┐   │  │
-│  │  │   File      │ │   Command   │ │   Project   │   │  │
-│  │  │ Operations  │ │ Execution   │ │   Build     │   │  │
-│  │  └─────────────┘ └─────────────┘ └─────────────┘   │  │
+│  │              MCP Protocol Layer                    │  │
+│  │    Secure communication between components         │  │
 │  └─────────────────────────────────────────────────────┘  │
 │                             │                             │
 │  ┌─────────────────────────────────────────────────────┐  │
-│  │           Global Memory System                     │  │
-│  │     Persistent Learning & Knowledge Base           │  │
+│  │                 Ollama LLMs                        │  │
+│  │         Local model inference engine               │  │
 │  └─────────────────────────────────────────────────────┘  │
 └─────────────────────────────────────────────────────────────┘
 ```
 
-## 🚀 Quick Start
+## 🚀 Getting Started
 
-### 1. Installation
+### Prerequisites
+
+- Python 3.8+ 
+- Node.js 16+ (for ICE desktop app)
+- Ollama (for local LLM inference)
+- Git
+
+### 1. Basic Setup
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/LANS.git
+git clone https://github.com/viki-ros/LANS.git
 cd LANS
 
-# Create virtual environment
+# Create and activate virtual environment
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 
-# Install LANS
-pip install -e .
+# Install required Python packages
+pip install -r requirements.txt  # Create this file if needed
 ```
 
-### 2. Setup Local LLM (Ollama)
+### 2. Setup Ollama (Local LLM)
 
 ```bash
 # Install Ollama
 curl -fsSL https://ollama.ai/install.sh | sh
 
-# Pull recommended models
+# Pull recommended models for LANS
 ollama pull deepseek-coder:6.7b
+ollama pull llama3.1:8b
 ollama pull codellama:7b
 ```
 
-### 3. Start LANS
+### 3. Run LANS Components
+
+#### Option A: Use the Fresh Launcher (Recommended)
+```bash
+# Run the comprehensive launcher
+python lans_fresh_launcher.py
+```
+
+#### Option B: Use Individual Components
+```bash
+# Run cognitive agents
+python cognitive_agents.py
+
+# Or use the CLI
+python -m agent_core.cli
+```
+
+### 4. ICE Desktop App (Optional)
 
 ```bash
-# Start the MCP server
-lans-server
+# Navigate to ICE desktop app
+cd ice/desktop-app
 
-# In another terminal, use LANS
-lans "create a simple calculator app"
+# Install dependencies
+npm install
+
+# Start development server
+npm run dev
 ```
 
 ## 📖 Usage Examples
 
-### Simple File Operations
+### Cognitive Agent Interaction
+
+The primary way to interact with LANS is through the cognitive agents:
+
 ```bash
-# Create folders
-lans "create folder my_new_project"
+# Start the fresh launcher for interactive mode
+python lans_fresh_launcher.py
 
-# Create files with content
-lans "create file config.json with basic settings"
-
-# Create Python scripts
-lans "create a Python script to process CSV files"
+# Follow the interactive prompts to:
+# - Initialize agents
+# - Start global memory server
+# - Chat with AI agents
+# - Switch between different models
 ```
 
-### Web Development
-```bash
-# Frontend applications
-lans "create a React todo app with local storage"
-lans "create a Vue.js weather dashboard"
+### Global Memory System
 
-# Backend APIs
-lans "create a FastAPI service for user management"
-lans "create a Flask blog API with SQLite"
+```python
+# Example: Using the global memory system
+from global_mcp_server.api import GMCPClient
 
-# Full-stack applications
-lans "create a todo app with React frontend and Node.js backend"
+client = GMCPClient("http://localhost:8080")
+await client.store_memory(
+    memory_type="episodic",
+    content="Successful Python project creation",
+    metadata={"project_type": "python", "success": True}
+)
 ```
 
-### Desktop Applications
-```bash
-# GUI applications
-lans "create a Python GUI calculator with Tkinter"
-lans "create an Electron text editor app"
+### ICE Desktop Interface
 
-# CLI tools
-lans "create a command-line file organizer in Python"
-lans "create a Rust CLI tool for JSON processing"
-```
+The ICE desktop app provides a modern GUI for:
+- Terminal integration with AI assistance
+- Code editing with Monaco editor
+- Real-time agent communication
+- Memory system visualization
 
-### Data Science & Analysis
-```bash
-# Analysis projects
-lans "create a Jupyter notebook for stock price analysis"
-lans "create a Python script for data visualization with matplotlib"
+## 🔧 Current Capabilities
 
-# Machine learning
-lans "create a simple image classifier with TensorFlow"
-```
+### ✅ Working Features
 
-## 🔧 Advanced Features
+- **Cognitive Agents**: Multi-agent system with memory and reasoning
+- **Global Memory**: Persistent knowledge storage and retrieval
+- **ICE Desktop**: Modern desktop interface
+- **Ollama Integration**: Local LLM support
+- **MCP Protocol**: Secure agent communication
+- **Interactive Launchers**: Multiple ways to start and interact with the system
 
-### Project Templates
-LANS includes built-in templates for common project types:
+### 🚧 In Development
 
-- **web_app**: Modern web applications with best practices
-- **api**: RESTful APIs with documentation
-- **cli_tool**: Command-line utilities with argument parsing
-- **desktop_app**: Cross-platform desktop applications
-- **library**: Reusable code libraries with proper packaging
-- **game**: Simple games with graphics and interaction
-- **data_science**: Analysis projects with proper structure
-
-### Intelligent Code Generation
-- **Language Detection**: Automatically chooses the best language for the task
-- **Framework Selection**: Picks appropriate frameworks and libraries
-- **Best Practices**: Follows industry standards and patterns
-- **Error Handling**: Includes proper exception handling and logging
-- **Testing**: Generates unit tests and validation code
-
-### Continuous Learning
-- **Success Patterns**: Remembers what works well for different project types
-- **Error Solutions**: Learns from mistakes and applies fixes automatically
-- **User Preferences**: Adapts to your coding style and preferences
-- **Knowledge Sharing**: Benefits from the collective experience of all users
+- **CLI Interface**: Command-line tool for direct task execution
+- **Package Installation**: Proper Python package setup
+- **Advanced Reasoning**: Enhanced cognitive capabilities
+- **Plugin System**: Extensible architecture
+- **Web Interface**: Browser-based interaction
 
 ## 🧠 Global Memory System
 
-LANS includes a revolutionary **Global Memory MCP Server** that provides persistent, shared memory capabilities for AI agents across sessions and systems.
+LANS includes an advanced **Global Memory MCP Server** that provides persistent, shared memory capabilities for AI agents across sessions and systems.
 
 ### Key Features
 
@@ -208,38 +205,15 @@ LANS includes a revolutionary **Global Memory MCP Server** that provides persist
 - **Intelligent Retrieval**: Vector-based semantic search
 - **Global Accessibility**: Any AI model can access the memory system
 
-### Quick Start with Global Memory
+### Starting Global Memory
 
 ```bash
-# Start the Global Memory server (requires PostgreSQL)
-./scripts/start_global_memory.sh
+# Start with the launcher (recommended)
+python lans_fresh_launcher.py
 
-# Or use Docker Compose
-docker-compose -f docker-compose.global-memory.yml up -d
-```
-
-### Using Global Memory in Your Code
-
-```python
-from global_mcp_server.api import GMCPClient, LANSMemoryIntegration
-
-# Basic client usage
-client = GMCPClient("http://localhost:8001")
-client.configure_agent("my_agent")
-
-# Store memories
-await client.store_memory(
-    memory_type="episodic",
-    content="Successfully created a Python web application with FastAPI",
-    metadata={"project": "web_app", "framework": "fastapi", "success": True}
-)
-
-# Retrieve memories
-memories = await client.retrieve_memories(
-    query="web application development",
-    memory_types=["episodic", "procedural"],
-    max_results=5
-)
+# Or start manually
+cd scripts
+./start_global_memory.sh
 ```
 
 ## 📁 Project Structure
@@ -248,100 +222,149 @@ memories = await client.retrieve_memories(
 LANS/
 ├── agent_core/              # Core multi-agent system
 │   ├── agents/              # AI agents (planning, coding, coordinator)
-│   ├── models/              # Data models and schemas
-│   ├── llm/                 # LLM integration and utilities
+│   ├── core/                # Core engine and configuration
+│   ├── llm/                 # LLM integration (Ollama client)
 │   └── cli.py               # Command-line interface
-├── mcp_server/              # Model Context Protocol server
-│   ├── handlers/            # File and command handlers
-│   ├── security/            # Sandboxing and validation
-│   └── main.py              # Server entry point
+├── cognitive_agents.py      # Enhanced cognitive agent system
 ├── global_mcp_server/       # Global memory system
 │   ├── api/                 # Memory API endpoints
 │   ├── core/                # Memory management logic
-│   └── storage/             # Persistent storage layer
-├── scripts/                 # Utility scripts
-├── tests/                   # Comprehensive test suite
-└── docs/                    # Documentation
+│   ├── storage/             # Persistent storage layer
+│   └── config/              # Configuration files
+├── ice/                     # ICE Desktop Application
+│   ├── desktop-app/         # Tauri + React desktop app
+│   └── agent-host/          # Agent hosting system
+├── mcp_server/              # Model Context Protocol server
+│   ├── handlers/            # Request handlers
+│   └── security/            # Security and validation
+├── scripts/                 # Utility and setup scripts
+│   ├── start_global_memory.sh
+│   ├── setup_dev.sh
+│   └── quick-start.sh
+├── lans_fresh_launcher.py   # Main interactive launcher
+├── lans_cli.py              # CLI interface
+└── tests/                   # Test suite
 ```
 
 ## 🔄 How LANS Works
 
-1. **Natural Language Input**: You describe what you want in plain English
-2. **Intelligent Planning**: Planning agent analyzes requirements and creates a project plan
-3. **Code Generation**: Coding agent implements the plan with production-ready code
-4. **Automatic Testing**: Built-in validation and error detection
-5. **Error Recovery**: Autonomous fixing of issues and optimization
-6. **Knowledge Storage**: Every successful project improves LANS for future requests
+1. **Initialize System**: Start with `lans_fresh_launcher.py` for full system initialization
+2. **Agent Interaction**: Cognitive agents with memory, reasoning, and learning capabilities
+3. **Memory Integration**: Persistent knowledge storage across sessions
+4. **Model Flexibility**: Support for multiple LLMs via Ollama
+5. **Desktop Interface**: Optional GUI through ICE desktop app
 
 ## 🛠️ Development & Configuration
 
-### Environment Variables
-```bash
-# Optional: Configure LLM settings
-export LANS_MODEL="deepseek-coder:6.7b"
-export LANS_OLLAMA_BASE_URL="http://localhost:11434"
-
-# Optional: Memory system
-export LANS_MEMORY_ENABLED="true"
-export LANS_MEMORY_DB_URL="postgresql://localhost/lans_memory"
-```
-
-### Custom Templates
-Create your own project templates in `~/.lans/templates/`:
-
-```python
-# ~/.lans/templates/my_template.py
-def generate_project(spec):
-    return {
-        "files": {
-            "main.py": "# Your custom template",
-            "requirements.txt": "# Dependencies"
-        },
-        "commands": ["pip install -r requirements.txt"]
-    }
-```
-
-## 🚨 Security & Safety
-
-- **Sandboxed Execution**: All code runs in isolated environments
-- **Safe Defaults**: Conservative settings prevent system damage
-- **Command Validation**: Dangerous operations require explicit confirmation
-- **File System Protection**: Restricted access to system directories
-- **Network Isolation**: Optional network access controls
-
-## 📊 Performance & Capabilities
-
-- **Speed**: Simple projects generated in seconds
-- **Complexity**: Handles multi-file, multi-language projects
-- **Accuracy**: High success rate with automatic error correction
-- **Scalability**: Efficient resource usage for large projects
-- **Offline**: Works completely offline with local LLMs
-
-## 🤝 Contributing
-
-We welcome contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines.
+### Environment Setup
 
 ```bash
 # Development setup
+git clone https://github.com/viki-ros/LANS.git
+cd LANS
+
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate
+
+# Install development dependencies
+pip install -r requirements.txt  # Create as needed
+pip install pytest black ruff    # Development tools
+```
+
+### Configuration
+
+Key configuration files:
+- `agent_core/core/config.py` - Core agent configuration
+- `global_mcp_server/config/` - Memory system settings
+- `scripts/setup_dev.sh` - Development environment setup
+
+### Available Launchers
+
+- **`lans_fresh_launcher.py`** - Comprehensive system launcher (recommended)
+- **`cognitive_agents.py`** - Direct cognitive agent interaction
+- **`lans_cli.py`** - Command-line interface
+- **`demo_launcher.py`** - Demonstration and testing
+## 🚨 Security & Safety
+
+- **Local Execution**: Runs entirely on your local machine
+- **MCP Protocol**: Secure communication between components
+- **Sandboxed Operations**: Safe execution environment
+- **No External Dependencies**: No cloud services required
+- **Privacy-First**: Your data stays on your system
+
+## 📊 Performance & Requirements
+
+### System Requirements
+- **OS**: Linux, macOS, Windows
+- **Python**: 3.8 or higher
+- **RAM**: 8GB minimum, 16GB recommended (for LLMs)
+- **Storage**: 10GB+ for models and workspace
+- **GPU**: Optional but recommended for faster inference
+
+### Performance
+- **Startup**: ~30 seconds for full system initialization
+- **Response Time**: Varies by model and query complexity
+- **Memory Usage**: Efficient memory management with optional cleanup
+- **Offline**: Full functionality without internet connection
+
+## 🚧 Known Limitations
+
+- **CLI Interface**: Not fully implemented yet
+- **Package Installation**: No pip package available currently
+- **Documentation**: Some features still need documentation
+- **Testing**: Test coverage is incomplete
+- **Stability**: Some components are experimental
+
+## 🤝 Contributing
+
+We welcome contributions! The project is actively developed and needs help with:
+
+- **Core Features**: Implementing missing CLI functionality
+- **Testing**: Expanding test coverage
+- **Documentation**: Improving guides and examples
+- **UI/UX**: Enhancing the ICE desktop app
+- **Performance**: Optimizing memory and speed
+
+### Development Setup
+```bash
+# Fork and clone the repository
 git clone https://github.com/yourusername/LANS.git
 cd LANS
-pip install -e ".[dev]"
+
+# Set up development environment
+chmod +x scripts/setup_dev.sh
+./scripts/setup_dev.sh
 
 # Run tests
-pytest
+python -m pytest tests/
 
 # Code formatting
-black .
-ruff check --fix .
+black . && ruff check --fix .
 ```
 
 ## 📋 Roadmap
 
-- **IDE Integration**: VS Code extension and other editor plugins
-- **Cloud Deployment**: Remote LANS instances with web interface
-- **Team Collaboration**: Multi-user projects and shared knowledge
-- **Advanced Languages**: Expanded support for more programming languages
-- **Mobile Development**: Enhanced mobile app generation capabilities
+### Short Term (2025 Q2-Q3)
+- [ ] Complete CLI interface implementation
+- [ ] Package installation setup (setup.py/pyproject.toml)
+- [ ] Comprehensive documentation
+- [ ] Expanded test coverage
+- [ ] Performance optimizations
+
+### Medium Term (2025 Q4)
+- [ ] Web interface for remote access
+- [ ] Enhanced cognitive capabilities
+- [ ] Plugin system architecture
+- [ ] Multi-user support
+- [ ] Cloud deployment options
+
+### Long Term (2026+)
+- [ ] Advanced reasoning capabilities
+- [ ] Enterprise features
+- [ ] Mobile applications
+- [ ] Integration with other AI platforms
+- [ ] Commercial licensing options
 
 ## 📄 License
 
@@ -351,10 +374,13 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 Built with:
 - **Ollama** for local LLM inference
-- **FastAPI** for the MCP server
-- **PostgreSQL** for persistent memory storage
+- **React + Tauri** for the ICE desktop application
+- **FastAPI** for API services
+- **SQLite/PostgreSQL** for data storage
 - **Model Context Protocol** for secure agent operations
 
 ---
 
-**Ready to transform your ideas into code? Start with LANS today!**
+**LANS is under active development. Star the repo to follow progress!**
+
+For questions, issues, or contributions, please visit our [GitHub repository](https://github.com/viki-ros/LANS).
