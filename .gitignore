@@ -135,3 +135,11 @@ logs/
 *.bak
 *.backup
 *_backup_*
+
+# Installers
+Miniconda*.sh
+*.deb
+*.rpm
+*.pkg
+*.dmg
+*.msi
